@@ -1,0 +1,301 @@
+.checkout-container {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 30px;
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* LEFT SIDE - Order Summary */
+.checkout-right {
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  height: fit-content;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 20px;
+  overflow: hidden;
+  order: 1;
+  padding-inline: 6px;
+}
+
+/* RIGHT SIDE - Address and Items Column */
+.checkout-left {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  order: 2;
+}
+
+/* Box styles for address and items */
+.box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eef2f6;
+}
+
+/* Header gradient */
+.chech-head {
+  width: 100%;
+  background: #020024;
+  background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(13, 13, 92, 1) 35%, rgba(11, 15, 87, 1) 41%, rgba(8, 24, 87, 1) 52%, rgba(11, 51, 115, 1) 81%, rgba(6, 63, 148, 1) 91%, rgba(16, 83, 176, 1) 100%);
+  text-align: center;
+  color: white;
+  padding: 12px 0;
+  margin-bottom: 0;
+}
+
+.chech-head h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+/* Order details container */
+.orderdetail {
+  padding: 20px;
+}
+
+/* Summary rows */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 8px 0;
+}
+
+.summary-row p,
+.summary-row span {
+  margin: 0;
+  font-weight: 400;
+}
+
+.total {
+  font-weight: bold;
+  font-size: 18px;
+  border-top: 1px solid #ddd;
+  padding-top: 12px;
+  margin-top: 8px;
+}
+
+.total p,
+.total span {
+  font-weight: 700;
+}
+
+/* Cart items in checkout */
+.cartitems {
+  padding: 16px 0;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.cartitems:last-child {
+  border-bottom: none;
+}
+
+.cartitemsdetail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cartitemsimage {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.cartname {
+  flex: 1;
+  min-width: 150px;
+}
+
+.cartname h6 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.cartname p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Price styling */
+.cartitemsdetail > div:last-child p {
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Button styling */
+.checkout-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(13, 13, 92, 1) 35%, rgba(11, 15, 87, 1) 41%, rgba(8, 24, 87, 1) 52%, rgba(11, 51, 115, 1) 81%, rgba(6, 63, 148, 1) 91%, rgba(16, 83, 176, 1) 100%);
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.checkout-btn:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+.checkout-btn:active {
+  transform: translateY(0);
+}
+
+/* Horizontal rule */
+hr {
+  margin: 0;
+  border: none;
+  border-top: 1px solid #eef2f6;
+}
+
+/* Address styling */
+.box p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.box p span {
+  margin-left: 16px;
+  color: #666;
+}
+
+/* ======================================== */
+/* RESPONSIVE DESIGN - Mobile & Tablet */
+/* ======================================== */
+
+/* Tablet and below */
+@media (max-width: 1024px) {
+  .checkout-container {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  /* Order summary goes to top on mobile */
+  .checkout-right {
+    position: static;
+    order: 1;
+    width: 100%;
+  }
+  
+  /* Items go below */
+  .checkout-left {
+    order: 2;
+    width: 100%;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 768px) {
+  .checkout-container {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .box {
+    padding: 16px;
+  }
+  
+  .cartitemsdetail {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .cartname {
+    text-align: center;
+    min-width: auto;
+  }
+  
+  .cartitemsimage {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .orderdetail {
+    padding: 16px;
+  }
+  
+  .chech-head {
+    padding: 10px 0;
+  }
+  
+  .chech-head h3 {
+    font-size: 1.1rem;
+  }
+  
+  .summary-row {
+    margin-bottom: 10px;
+    padding: 6px 0;
+  }
+  
+  .total {
+    font-size: 16px;
+  }
+  
+  .checkout-btn {
+    padding: 0.7rem 1rem;
+    margin-top: 16px;
+  }
+}
+
+/* Small mobile phones */
+@media (max-width: 480px) {
+  .checkout-container {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .box {
+    padding: 12px;
+  }
+  
+  .cartitemsimage {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .cartname h6 {
+    font-size: 0.9rem;
+  }
+  
+  .summary-row p,
+  .summary-row span {
+    font-size: 0.9rem;
+  }
+  
+  .total {
+    font-size: 1rem;
+  }
+}
+
+/* For very small devices */
+@media (max-width: 360px) {
+  .checkout-container {
+    padding: 8px;
+  }
+  
+  .cartitemsimage {
+    width: 70px;
+    height: 70px;
+  }
+}

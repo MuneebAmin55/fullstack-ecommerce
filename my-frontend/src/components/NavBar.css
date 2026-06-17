@@ -1,0 +1,120 @@
+
+
+#itemsnbr{
+  color: rgb(44, 44, 208);
+   position: relative;
+   top: -4px;
+}
+.Navbar{
+ 
+background: #020024;
+background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(13, 13, 92, 1) 35%, rgba(11, 15, 87, 1) 41%, rgba(8, 24, 87, 1) 52%, rgba(11, 51, 115, 1) 81%, rgba(6, 63, 148, 1) 91%, rgba(16, 83, 176, 1) 100%);
+}
+.nvbr{
+  margin-bottom: 60px;
+
+}
+.navcontent{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.navbar-brand{
+   font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  
+}
+/* Search button for primary navbar */
+/* === Navbar Search Wrapper === */
+.navbar form {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  margin-inline: 12px;
+
+}
+li:hover {
+  color: #f39c12;
+}
+/* === Search Input === */
+.navbar .form-control {
+  height: 38px;
+  border-radius: 6px 0 0 6px;
+  border-right: none;
+}
+
+.navbar .form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
+
+/* === Search Button === */
+.btn-search-primary {
+  height: 38px;
+  background-color: #ffffff;
+  color: #0d6efd;
+  border: 1px solid #ced4da;
+  border-left: none;           /* 🔑 KEY FIX */
+  padding: 0 16px;
+  font-weight: 500;
+  border-radius: 0 6px 6px 0;
+  transition: background-color 0.2s ease;
+  margin-left: -24px;
+}
+
+.btn-search-primary:hover {
+  background-color: #e9f2ff;
+}
+
+.btn-search-primary:focus,
+.btn-search-primary:active {
+  outline: none;
+  box-shadow: none;
+}
+@media(max-width: 768px){
+  .Navbar{
+    height: 100px;
+   
+ }
+  .navcontent{
+   position:fixed;
+   width: 100%;
+   left: 0;
+   top: 30px;
+   display: flex;
+   flex-direction: row;
+  justify-content: space-around;
+  margin-top: 12PX;
+  padding-bottom: 24px;
+}
+.nvbr{
+  margin-bottom: 180px;
+
+}
+.navbar-brand{
+  position: fixed;
+  top: 6px;
+}
+.nav-item {
+ position: fixed;
+  top: 6px;
+  left: 170px;
+
+}
+.navdrop{
+ position: fixed !important;
+  top: 6px ;
+  left: 230px;
+  z-index: 1000;
+
+}
+.cartnbr{
+  color: rgb(44, 44, 208);
+  position: fixed !important;
+  top: 12px;
+  right: 10px;
+}
+}

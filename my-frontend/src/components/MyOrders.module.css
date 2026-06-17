@@ -1,0 +1,75 @@
+.ordersPage {
+  max-width: 900px;
+  margin: auto;
+}
+.container { max-width: 900px; display: flex; flex-direction: column; }
+
+/* Title */
+.title {
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+/* Order Card */
+.card {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+/* Header */
+.header {
+   background: #020024;
+background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(13, 13, 92, 1) 35%, rgba(11, 15, 87, 1) 41%, rgba(8, 24, 87, 1) 52%, rgba(11, 51, 115, 1) 81%, rgba(6, 63, 148, 1) 91%, rgba(16, 83, 176, 1) 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 18px;
+}
+
+/* Total price */
+.total {
+  float: right;
+  font-weight: 700;
+}
+
+/* Body */
+.body {
+  padding: 18px;
+}
+
+.date {
+  font-size: 14px;
+  color: #555;
+}
+
+.itemsTitle {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.item {
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  padding: 12px 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.empty {
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}

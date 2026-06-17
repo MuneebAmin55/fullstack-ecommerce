@@ -1,0 +1,108 @@
+.user-profile {
+  max-width: 900px;
+  margin: 200px auto 40px;
+  padding: 0 15px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Profile Card */
+.profile-card {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+  position: relative;
+  
+}
+
+.profile-info{
+  margin-top: 34px;
+}
+
+.profile-info p {
+  font-size: 16px;
+  color: #555;
+  margin: 6px 0;
+}
+.prof-head{
+    width: 100%;
+background: #020024;
+background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(13, 13, 92, 1) 35%, rgba(11, 15, 87, 1) 41%, rgba(8, 24, 87, 1) 52%, rgba(11, 51, 115, 1) 81%, rgba(6, 63, 148, 1) 91%, rgba(16, 83, 176, 1) 100%);
+  position:absolute ;
+ 
+  text-align: center;
+  color:white;
+  top: 0;
+  left: 0;
+   border-radius: 12px 12px 0 0;
+ 
+   padding-block: 2px;
+}
+
+/* Address Card */
+.address-card {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+
+
+/* Single Address */
+.address-item {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 12px;
+  transition: box-shadow 0.3s ease;
+  margin-top: 34px;
+}
+
+.address-item:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.address-item .name {
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+}
+
+.address-item span {
+  font-size: 14px;
+  color: #777;
+}
+
+.address-line {
+  margin-top: 5px;
+  font-size: 15px;
+  color: #555;
+}
+
+/* Empty State */
+.empty-text {
+  color: #999;
+  font-size: 15px;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .profile-card,
+  .address-card {
+    padding: 18px;
+  }
+
+  .profile-card h1 {
+    font-size: 20px;
+  }
+
+  .address-card h3 {
+    font-size: 18px;
+  }
+}

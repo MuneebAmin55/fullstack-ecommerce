@@ -1,0 +1,143 @@
+/* Main container */
+.product-detail-container {
+  max-width: 1200px;
+  margin: 5rem auto;
+  padding: 2rem;
+  display: flex;
+  gap: 3rem;
+  background: #fff;
+}
+
+/* LEFT: Image section */
+.product-detail-image {
+  flex: 1;
+  max-width: 450px;
+  background: #f7f7f7;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-detail-image img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+/* RIGHT: Info section */
+.product-detail-info {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Title */
+.product-detail-info h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #0f1111;
+  margin-bottom: 10px;
+}
+
+/* Price */
+.product-detail-info .price {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #b12704; /* Amazon red */
+  margin: 10px 0;
+}
+
+/* Description */
+.product-detail-info .description {
+  font-size: 0.95rem;
+  color: #565959;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Divider */
+.product-detail-info hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 15px 0;
+}
+
+/* Add to Cart Button */
+.add-to-cart-btn {
+  background: #ffd814;
+  border: 1px solid #fcd200;
+  padding: 10px;
+  font-weight: 600;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+  max-width: 250px;
+}
+
+.add-to-cart-btn:hover {
+  background: #f7ca00;
+}
+
+/* Buy Now Button */
+.buy-now-btn {
+  background: #ffa41c;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  max-width: 250px;
+}
+
+.buy-now-btn:hover {
+  background: #fa8900;
+}
+
+/* Status */
+.product-detail-container .status {
+  width: 100%;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+/* Tablet */
+@media (max-width: 992px) {
+  .product-detail-container {
+    gap: 2rem;
+  }
+
+  .product-detail-image {
+    max-width: 350px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .product-detail-container {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .product-detail-image {
+    max-width: 100%;
+  }
+
+  .product-detail-info h1 {
+    font-size: 1.4rem;
+  }
+
+  .product-detail-info .price {
+    font-size: 1.4rem;
+  }
+
+  .add-to-cart-btn,
+  .buy-now-btn {
+    width: 100%;
+    max-width: 100%;
+  }
+}

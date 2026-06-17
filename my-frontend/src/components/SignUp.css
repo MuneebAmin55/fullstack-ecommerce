@@ -1,0 +1,67 @@
+.signup-container {
+  max-width: 400px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: #f8f9fa; /* light gray */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.chech-head{
+  width: 100%;
+background: #020024;
+background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(13, 13, 92, 1) 35%, rgba(11, 15, 87, 1) 41%, rgba(8, 24, 87, 1) 52%, rgba(11, 51, 115, 1) 81%, rgba(6, 63, 148, 1) 91%, rgba(16, 83, 176, 1) 100%);
+  position:absolute ;
+  margin-bottom: 30px;
+  text-align: center;
+  color:white;
+  top: 0;
+  left: 0;
+   border-radius: 12px 12px 0 0;
+   margin-bottom: 2px;
+   padding-block: 2px;
+}
+
+.signup-container form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 34px;
+}
+
+.signup-container input {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.signup-container input:focus {
+  border-color: #007bff;
+}
+
+.signup-container button {
+  padding: 0.75rem 1rem;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.signup-container button:hover {
+  background-color: #0056b3;
+}
+
+.signup-container .error-message {
+  color: #dc3545; /* red */
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
