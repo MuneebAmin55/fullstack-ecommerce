@@ -1,7 +1,54 @@
 from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
+import secrets
+from datetime import timedelta
 
+from django.db import models
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password, check_password
+from django.utils import timezone
+
+User = get_user_model()
+
+
+class PasswordResetOTP(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="password_otps"
+    )
+
+    otp = models.CharField(max_length=255)
+    attempts = models.PositiveIntegerField(default=0)
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    @staticmethod
+    def generate_otp():
+        return "".join(str(secrets.randbelow(10)) for _ in range(6))
+
+    @classmethod
+    def create_otp(cls, user):
+        otp = cls.generate_otp()
+
+        cls.objects.filter(user=user).delete()
+
+        obj = cls.objects.create(
+            user=user,
+            otp=make_password(otp)
+        )
+
+        return obj, otp
+
+    def verify(self, otp):
+        return check_password(otp, self.otp)
+
+    def expired(self):
+        return timezone.now() > self.created_at + timedelta(minutes=10)
 class Products(models.Model):
     user= models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
     productname=models.CharField(max_length=150)

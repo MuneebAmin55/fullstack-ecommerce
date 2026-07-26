@@ -24,8 +24,8 @@ function SignUp() {
     });
 
   const onSubmit = (data) => {
-    const { username, email, password } = data; 
-    const payload = { username, email, password };
+    const { username, email, password, confirmPassword,} = data; 
+    const payload = { username, email, password, re_password: confirmPassword,  };
     dispatch(sigUpUser(payload));
     reset();
   };

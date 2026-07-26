@@ -5,101 +5,148 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from .models import Products,CartItems,Order,OrderItems,UserAddres,CatagoryImage
-from .serializer import ProductsSerializer,UserRegisterSerializer,CartItemsSerializer,OrderSerializer,OrderItemsSerializer,UserAddresSeriliazer,CatagoryImageSerializer
+from .serializer import ProductsSerializer,UserRegisterSerializer,CartItemsSerializer,OrderSerializer,OrderItemsSerializer,UserAddresSeriliazer,CatagoryImageSerializer,RequestOTPSerializer,ConfirmOTPSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser,IsAuthenticatedOrReadOnly,AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.contrib.auth.models import User
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
-token_generator = PasswordResetTokenGenerator()
+from datetime import timedelta
+
+from django.db import transaction
+from django.utils import timezone
+from django.contrib.auth import get_user_model
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+from .models import PasswordResetOTP
+
+from .utils import send_otp
+
+User = get_user_model()
 
 
-# ================= REQUEST RESET =================
-class RequestPasswordResetView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        email = request.data.get("email")
-
-        if not email:
-            return Response({"error": "Email is required"}, status=400)
-
-        user = User.objects.filter(email=email).first()
-
-        # always safe response (security best practice)
-        if user:
-            uid = urlsafe_base64_encode(force_bytes(user.id))
-            token = token_generator.make_token(user)
-
-            reset_link = f"http://localhost:3000/reset-password/{uid}/{token}/"
-
-            # DEBUG ONLY (no email to avoid crash)
-            print("RESET LINK:", reset_link)
-
-        return Response(
-            {"message": "If email exists, reset link generated"},
-            status=200
-        )
-
-
-# ================= RESET PASSWORD =================
-class ResetPasswordView(APIView):
-    permission_classes = [AllowAny]
+class RequestPasswordResetOTP(APIView):
 
     def post(self, request):
-        uid = request.data.get("uid")
-        token = request.data.get("token")
-        password = request.data.get("password")
 
-        if not uid or not token or not password:
-            return Response({"error": "All fields required"}, status=400)
+        serializer = RequestOTPSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
 
         try:
-            user_id = urlsafe_base64_decode(uid).decode()
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({
+                "detail": "If this email exists, an OTP has been sent."
+            })
 
-            if token_generator.check_token(user, token):
-                user.set_password(password)
-                user.save()
-                return Response({"message": "Password reset successful"})
-            else:
-                return Response({"error": "Invalid or expired token"}, status=400)
+        latest = PasswordResetOTP.objects.filter(user=user).first()
 
-        except:
-            return Response({"error": "Invalid request"}, status=400)
+        if latest:
 
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        
-        serializer = UserRegisterSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "User registered successfully"},
-                status=status.HTTP_201_CREATED
-            )
+            diff = timezone.now() - latest.created_at
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if diff < timedelta(seconds=60):
+                return Response(
+                    {
+                        "detail": "Please wait before requesting another OTP."
+                    },
+                    status=status.HTTP_429_TOO_MANY_REQUESTS
+                )
 
-class MeView(APIView):
-    permission_classes = [IsAuthenticated]
+        otp_obj, otp = PasswordResetOTP.create_otp(user)
 
-    def get(self, request):
-        user = request.user
+        send_otp(user.email, otp)
+
         return Response({
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
+            "detail": "If this email exists, an OTP has been sent."
         })
 
+
+class ConfirmPasswordResetOTP(APIView):
+
+    @transaction.atomic
+    def post(self, request):
+
+        serializer = ConfirmOTPSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
+        otp = serializer.validated_data["otp"]
+        new_password = serializer.validated_data["new_password"]
+
+        try:
+            user = User.objects.get(email=email)
+
+            otp_obj = PasswordResetOTP.objects.filter(
+                user=user,
+                is_used=False
+            ).latest("created_at")
+
+        except (User.DoesNotExist, PasswordResetOTP.DoesNotExist):
+
+            return Response(
+                {
+                    "detail": "Invalid OTP."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if otp_obj.expired():
+
+            otp_obj.delete()
+
+            return Response(
+                {
+                    "detail": "OTP expired."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if otp_obj.attempts >= 5:
+
+            otp_obj.delete()
+
+            return Response(
+                {
+                    "detail": "Too many attempts."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not otp_obj.verify(otp):
+
+            otp_obj.attempts += 1
+            otp_obj.save()
+
+            return Response(
+                {
+                    "detail": "Invalid OTP."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.set_password(new_password)
+        user.save()
+
+        PasswordResetOTP.objects.filter(user=user).delete()
+
+        return Response(
+            {
+                "detail": "Password changed successfully."
+            },
+            status=status.HTTP_200_OK
+        )
 class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Products.objects.all()

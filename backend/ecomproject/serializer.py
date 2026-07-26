@@ -2,20 +2,28 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Products,CartItems,Order,OrderItems,UserAddres,CatagoryImage
 
-class UserRegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
+from django.contrib.auth.models import User
+from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 
-    class Meta:
+
+class RequestOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class ConfirmOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
+    new_password = serializers.CharField(write_only=True)
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+class UserRegisterSerializer(BaseUserCreateSerializer):
+    class Meta(BaseUserCreateSerializer.Meta):
         model = User
         fields = ['id', 'username', 'email', 'password']
-
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data.get('email'),
-            password=validated_data['password']
-        )
-        return user
 
 
     

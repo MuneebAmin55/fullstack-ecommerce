@@ -38,7 +38,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/login" element={<Login />} />
        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:uid/:token" element={<Reset />} />
+        <Route path="/reset-password" element={<Reset />}/>
       </Routes>
     </Router>
     <ToastContainer position="top-right" autoClose={2000} />

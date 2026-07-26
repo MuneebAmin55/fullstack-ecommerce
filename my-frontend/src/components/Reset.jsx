@@ -1,20 +1,28 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { resetPassword } from "../features/auth/authSlice";
 
 function Reset() {
-  const { uid, token } = useParams();
   const dispatch = useDispatch();
-  const { register, handleSubmit } = useForm();
+
+  const { loading, success, error } = useSelector(
+    (state) => state.auth
+  );
+
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm();
 
   const onSubmit = (data) => {
     dispatch(
       resetPassword({
-        uid,
-        token,
-        password: data.password,
+        email: data.email,
+        otp: data.otp,
+        new_password: data.new_password,
       })
     );
   };
@@ -25,14 +33,77 @@ function Reset() {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <input
-          type="password"
-          placeholder="New Password"
-          {...register("password")}
-          required
+          type="email"
+          placeholder="Email"
+          {...register("email", {
+            required: "Email is required",
+          })}
         />
 
-        <button type="submit">Update Password</button>
+        {errors.email && (
+          <p>{errors.email.message}</p>
+        )}
+
+        <input
+          type="text"
+          placeholder="OTP"
+          {...register("otp", {
+            required: "OTP is required",
+            minLength: 6,
+            maxLength: 6,
+          })}
+        />
+
+        {errors.otp && (
+          <p>OTP must be 6 digits.</p>
+        )}
+
+        <input
+          type="password"
+          placeholder="New Password"
+          {...register("new_password", {
+            required: "Password is required",
+            minLength: 8,
+          })}
+        />
+
+        {errors.new_password && (
+          <p>{errors.new_password.message}</p>
+        )}
+
+      <input
+  type="password"
+  placeholder="Confirm Password"
+  {...register("confirm_password", {
+    required: "Confirm Password is required",
+    validate: (value) =>
+      value === getValues("new_password") ||
+      "Passwords do not match",
+  })}
+/>
+
+{errors.confirm_password && (
+  <p>{errors.confirm_password.message}</p>
+)}
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Updating..." : "Update Password"}
+        </button>
       </form>
+
+      {success && (
+        <p style={{ color: "green" }}>
+          {success}
+        </p>
+      )}
+
+      {error && (
+        <p style={{ color: "red" }}>
+          {typeof error === "string"
+            ? error
+            : error.detail || JSON.stringify(error)}
+        </p>
+      )}
     </div>
   );
 }

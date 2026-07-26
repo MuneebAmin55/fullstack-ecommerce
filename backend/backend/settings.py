@@ -5,7 +5,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'your-secret-key'
 DEBUG = True
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -13,13 +16,41 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'djoser', 
     'rest_framework',
     'corsheaders',
     'django_filters',
 
     'ecomproject',
 ]
+
+
+DJOSER = {
+    "LOGIN_FIELD": "username",
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "SEND_ACTIVATION_EMAIL": False,
+
+    "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}",
+
+    "SERIALIZERS": {
+        "user_create": "ecomproject.serializer.UserRegisterSerializer",
+        "user": "djoser.serializers.UserSerializer",
+        "current_user": "djoser.serializers.UserSerializer",
+    },
+
+    "DOMAIN": "localhost:5173",
+    "SITE_NAME": "drf and redux toolkit",
+    "PROTOCOL": "http",
+}
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -34,11 +65,22 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'backend.urls'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+     'default': {
+         'ENGINE': 'django.db.backends.mysql',
+         'NAME': 'ecommerce_db',
+         'USER': 'root',
+         'PASSWORD': 'root123',
+         'HOST': 'localhost',
+         'PORT': '3306',
+     }
+ }
+ 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 TEMPLATES = [
     {
@@ -83,10 +125,3 @@ REST_FRAMEWORK = {
     )
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-
-EMAIL_HOST_USER = 'your_email@gmail.com'
-EMAIL_HOST_PASSWORD = 'your_app_password'
