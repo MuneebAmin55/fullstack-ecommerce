@@ -2,12 +2,13 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { forgotPassword } from "../features/auth/authSlice";
-import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
+import "./ForgotPassword.css";
 function ForgotPassword() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { loading, success, error } = useSelector(
+  const { loading, error } = useSelector(
     (state) => state.auth
   );
 
@@ -17,52 +18,59 @@ function ForgotPassword() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    dispatch(forgotPassword(data.email));
+  const onSubmit = async (data) => {
+    const result = await dispatch(
+      forgotPassword(data.email)
+    );
+
+    if (forgotPassword.fulfilled.match(result)) {
+      navigate("/reset-password", {
+        state: {
+          email: data.email,
+        },
+      });
+    }
   };
 
   return (
-    <div>
-      <h2>Forgot Password</h2>
+    <div className="login-container">
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div className="chech-head">
+        <h3>Forgot Password</h3>
+    </div>
+
+    <form onSubmit={handleSubmit(onSubmit)}>
+
         <input
-          type="email"
-          placeholder="Enter your email"
-          {...register("email", {
-            required: "Email is required",
-          })}
+            type="email"
+            placeholder="Enter Email"
+            {...register("email", {
+                required: "Email is required",
+            })}
         />
 
         {errors.email && (
-          <p style={{ color: "red" }}>
-            {errors.email.message}
-          </p>
+            <p className="error-message">
+                {errors.email.message}
+            </p>
         )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send OTP"}
+        <button
+            type="submit"
+            className="checkout-btn"
+            disabled={loading}
+        >
+            {loading ? "Sending..." : "Send OTP"}
         </button>
-      </form>
 
-      {success && (
-        <>
-          <p style={{ color: "green" }}>{success}</p>
+        {error && (
+            <p className="error-message">
+                {error.detail}
+            </p>
+        )}
+    </form>
 
-          <Link to="/reset-password">
-            Enter OTP
-          </Link>
-        </>
-      )}
-
-      {error && (
-        <p style={{ color: "red" }}>
-          {typeof error === "string"
-            ? error
-            : error.detail || JSON.stringify(error)}
-        </p>
-      )}
-    </div>
+</div>
   );
 }
 
