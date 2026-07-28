@@ -90,6 +90,58 @@ background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(13, 13, 92, 1) 35%
   text-align: center;
   padding: 20px;
 }
+.add-address-btn {
+  background: #0d6efd;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  position: absolute;
+  right: 20px;
+  top: 12px;
+  transition: 0.3s;
+}
+
+.add-address-btn:hover {
+  background: #0b5ed7;
+}
+
+.address-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.edit-btn {
+  background-color: #198754;
+}
+
+.edit-btn:hover {
+  background-color: #157347;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+}
+
+.delete-btn:hover {
+  background-color: #bb2d3b;
+}
 
 /* Mobile Responsive */
 @media (max-width: 600px) {
@@ -104,5 +156,23 @@ background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(13, 13, 92, 1) 35%
 
   .address-card h3 {
     font-size: 18px;
+  }
+  .prof-head {
+    padding: 12px;
+  }
+
+  .add-address-btn {
+    position: static;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .address-buttons {
+    flex-direction: column;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    width: 100%;
   }
 }

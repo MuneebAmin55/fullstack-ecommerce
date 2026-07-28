@@ -4,13 +4,13 @@ const api = axios.create({
   baseURL: "http://127.0.0.1:8000/api/",
 });
 
-// ================= REQUEST INTERCEPTOR =================
+
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("access");
+    const accessToken = localStorage.getItem("access");
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     return config;
@@ -18,15 +18,17 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ================= RESPONSE INTERCEPTOR =================
+
 api.interceptors.response.use(
   (response) => response,
+
   async (error) => {
     const originalRequest = error.config;
 
-    // Access token expired
+    // If unauthorized and request has not been retried
     if (
-      error.response?.status === 401 &&
+      error.response &&
+      error.response.status === 401 &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
@@ -34,24 +36,35 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refresh");
 
-        const res = await axios.post(
-          "http://127.0.0.1:8000/api/token/refresh/",
-          { refresh: refreshToken }
+        if (!refreshToken) {
+          throw new Error("No refresh token found");
+        }
+
+    
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/auth/jwt/refresh/",
+          {
+            refresh: refreshToken,
+          }
         );
 
-        // Save new access token
-        localStorage.setItem("access", res.data.access);
+        const newAccessToken = response.data.access;
 
-        // Update header
-        api.defaults.headers.Authorization =
-          `Bearer ${res.data.access}`;
+        
+        localStorage.setItem("access", newAccessToken);
 
-        // Retry original request
+      
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        
         return api(originalRequest);
       } catch (err) {
-        // Refresh token expired → logout
-        localStorage.clear();
+       
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+
         window.location.href = "/login";
+
         return Promise.reject(err);
       }
     }

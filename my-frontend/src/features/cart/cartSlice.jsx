@@ -40,9 +40,11 @@ export const cartItemAll = createAsyncThunk(
   "cartitem/getId",
   async (_, thunkAPI) => {
     try {
-      const response = await api.get("cartitems");
+      const response = await api.get("cartitems/");
       return response.data;
-    } catch {
+    } catch(error) {
+       console.log(error.response?.status);
+      console.log(error.response?.data);
       return thunkAPI.rejectWithValue("Failed to fetch cartitm");
     }
   },
