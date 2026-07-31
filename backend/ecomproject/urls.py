@@ -8,7 +8,7 @@ from .views import (
     OrderViewSet,
     AddressViewSet,
     CatagoryImageViewSet,
-     RequestPasswordResetOTP,
+    RequestPasswordResetOTP,
     ConfirmPasswordResetOTP,
 )
 

@@ -13,11 +13,7 @@ User = get_user_model()
 
 
 class PasswordResetOTP(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="password_otps"
-    )
+    user = models.ForeignKey( User,  on_delete=models.CASCADE,related_name="password_otps")
 
     otp = models.CharField(max_length=255)
     attempts = models.PositiveIntegerField(default=0)
