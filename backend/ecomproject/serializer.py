@@ -23,10 +23,8 @@ class ConfirmOTPSerializer(serializers.Serializer):
 class UserRegisterSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
         model = User
-        fields = ['id', 'username', 'email', 'password']
+        fields = ['id', 'username', 'email', 'password', 're_password']
 
-
-    
 class ProductsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Products

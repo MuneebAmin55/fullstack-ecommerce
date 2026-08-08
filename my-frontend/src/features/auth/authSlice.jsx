@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
+import { extractApiError } from "../../utils/apiErrorParser";
 
 /* ---------------- SIGNUP ---------------- */
 export const sigUpUser = createAsyncThunk(
@@ -10,7 +11,9 @@ export const sigUpUser = createAsyncThunk(
       const response = await api.post("auth/users/", userData);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Registration failed."
+      );
     }
   }
 );
@@ -20,7 +23,7 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials, thunkAPI) => {
     try {
-      // Djoser JWT expects: { email, password }
+      // Djoser JWT uses username or email based on LOGIN_FIELD
       const response = await api.post("auth/jwt/create/", credentials);
 
       localStorage.setItem("access", response.data.access);
@@ -28,7 +31,9 @@ export const loginUser = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Login failed. Please verify your credentials."
+      );
     }
   }
 );
@@ -45,7 +50,7 @@ export const forgotPassword = createAsyncThunk(
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || { detail: "Something went wrong." }
+        extractApiError(error.response?.data) || "Unable to send OTP. Please try again."
       );
     }
   }
@@ -68,7 +73,7 @@ export const resetPassword = createAsyncThunk(
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || { detail: "Something went wrong." }
+        extractApiError(error.response?.data) || "Unable to reset password. Please try again."
       );
     }
   }
@@ -119,24 +124,25 @@ const authSlice = createSlice({
       })
       .addCase(sigUpUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Registration failed. Please check the form. ";
       })
       // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(loginUser.fulfilled, (state) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.error = false;
+        state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Login failed. Please try again.";
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.user = action.payload;
-        state.error = false;
+        state.error = null;
         state.checkedAuth = true;
       })
       .addCase(fetchUser.rejected, (state) => {

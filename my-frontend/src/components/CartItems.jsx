@@ -103,7 +103,7 @@ function CartItems() {
     return (
       <div className="empty-cart">
         <h2>Your cart is empty</h2>
-        <LinkContainer to="/Products">
+        <LinkContainer to="/products">
           <NavLink className="nav-link active" aria-current="page">
             <button>Continue Shopping</button>
           </NavLink>

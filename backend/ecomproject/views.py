@@ -216,6 +216,59 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-    
 
- 
+
+import stripe
+from django.conf import settings
+
+stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', 'sk_test_51PlaceholderSecretKeyForTesting')
+
+class CreateStripePaymentIntentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            amount = request.data.get('amount')
+            order_id = request.data.get('order_id')
+
+            if not amount or float(amount) <= 0:
+                return Response({'error': 'A valid amount is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            amount_in_cents = int(float(amount) * 100)
+
+            intent = stripe.PaymentIntent.create(
+                amount=amount_in_cents,
+                currency='usd',
+                metadata={
+                    'user_id': request.user.id,
+                    'order_id': order_id or ''
+                }
+            )
+
+            return Response({
+                'clientSecret': intent.client_secret,
+                'paymentIntentId': intent.id
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ConfirmStripePaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        order_id = request.data.get('order_id')
+        payment_intent_id = request.data.get('payment_intent_id')
+
+        try:
+            if order_id:
+                order = Order.objects.get(id=order_id, user=request.user)
+                order.status = Order.STATUS_PAID
+                order.save()
+                return Response({'message': 'Payment confirmed and order updated to paid.', 'status': order.status}, status=status.HTTP_200_OK)
+            return Response({'message': 'Payment confirmed successfully.'}, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

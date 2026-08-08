@@ -60,13 +60,13 @@ function Login() {
               {loading ? "Loading..." : "Login"}
             </button>
 
-                  {error?.detail && (
-  <p className="error-message">{error.detail}</p>
+                  {error && (
+  <p className="error-message">{typeof error === "string" ? error : error.detail || JSON.stringify(error)}</p>
 )}
 
             <p>
               dont have account
-              <LinkContainer to="/SignUp">
+              <LinkContainer to="/signup">
                 <NavLink className="nav-link active">create?</NavLink>
               </LinkContainer>
             </p>

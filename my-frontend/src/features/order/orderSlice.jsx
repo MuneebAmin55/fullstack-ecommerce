@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/axios";
+import { extractApiError } from "../../utils/apiErrorParser";
 
 export const addToOrder = createAsyncThunk(
   "orderitem/post",
@@ -7,8 +8,10 @@ export const addToOrder = createAsyncThunk(
     try {
       const response = await api.post("order/", data);
       return response.data;
-    } catch {
-      return thunkAPI.rejectWithValue("Failed to add pro to order");
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to create order."
+      );
     }
   },
 );
@@ -19,8 +22,10 @@ export const fetchOrder = createAsyncThunk(
       const response = await api.get("order/");
       console.log("API Response:", response.data);
       return response.data;
-    } catch {
-      return thunkAPI.rejectWithValue("Failed to fetch to order");
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to load orders."
+      );
     }
   },
 );

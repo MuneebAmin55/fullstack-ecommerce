@@ -65,7 +65,7 @@ function ForgotPassword() {
 
         {error && (
             <p className="error-message">
-                {error.detail}
+                {typeof error === "string" ? error : error.detail || JSON.stringify(error)}
             </p>
         )}
     </form>

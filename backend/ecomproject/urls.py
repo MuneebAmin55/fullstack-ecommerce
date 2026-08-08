@@ -10,6 +10,8 @@ from .views import (
     CatagoryImageViewSet,
     RequestPasswordResetOTP,
     ConfirmPasswordResetOTP,
+    CreateStripePaymentIntentView,
+    ConfirmStripePaymentView,
 )
 
 router = DefaultRouter()
@@ -22,6 +24,10 @@ router.register(r'order', OrderViewSet, basename='order')
 urlpatterns = [
     # API ROUTES
     path('', include(router.urls)),
+
+    # STRIPE PAYMENT
+    path('create-payment-intent/', CreateStripePaymentIntentView.as_view(), name='create-payment-intent'),
+    path('confirm-stripe-payment/', ConfirmStripePaymentView.as_view(), name='confirm-stripe-payment'),
 
     # AUTH (Djoser + JWT)
     path('auth/', include('djoser.urls')),
@@ -39,4 +45,4 @@ urlpatterns = [
     ),
     # FRONTEND (KEEP LAST)
     re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
-]
+]

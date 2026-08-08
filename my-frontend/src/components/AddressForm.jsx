@@ -123,11 +123,15 @@ function AddressForm({ address = null, onClose }) {
           <p className="error-message">{errors.address_line.message}</p>
         )}
 
-        {error && typeof error === "object" && (
+        {error && (
           <div className="error-message">
-            {Object.values(error).flat().map((msg, index) => (
-              <p key={index}>{msg}</p>
-            ))}
+            {typeof error === "string" ? (
+              <p>{error}</p>
+            ) : (
+              Object.values(error)
+                .flat()
+                .map((msg, index) => <p key={index}>{msg}</p>)
+            )}
           </div>
         )}
 

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/axios";
+import { extractApiError } from "../../utils/apiErrorParser";
 
 export const addToCart = createAsyncThunk(
   "cartitem/post",
@@ -7,8 +8,10 @@ export const addToCart = createAsyncThunk(
     try {
       const response = await api.post("cartitems/", data);
       return response.data;
-    } catch {
-      return thunkAPI.rejectWithValue("Failed to add pro to cart");
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to add product to cart."
+      );
     }
   },
 );
@@ -19,8 +22,10 @@ export const deleteCartItem = createAsyncThunk(
     try {
       await api.delete(`cartitems/${id}/`);
       return id; // return the ID we deleted
-    } catch {
-      return thunkAPI.rejectWithValue("Failed to delete cart item");
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to delete cart item."
+      );
     }
   },
 );
@@ -30,8 +35,10 @@ export const updateQty = createAsyncThunk(
     try {
       const response = await api.patch(`cartitems/${id}/`, { quantity });
       return response.data;
-    } catch {
-      return thunkAPI.rejectWithValue("Failed to  patch itemquanoti");
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to update item quantity."
+      );
     }
   },
 );
@@ -42,10 +49,10 @@ export const cartItemAll = createAsyncThunk(
     try {
       const response = await api.get("cartitems/");
       return response.data;
-    } catch(error) {
-       console.log(error.response?.status);
-      console.log(error.response?.data);
-      return thunkAPI.rejectWithValue("Failed to fetch cartitm");
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to fetch cart items."
+      );
     }
   },
 );
@@ -79,9 +86,9 @@ export const cartSlice = createSlice({
         state.cartItem = action.payload;
       })
 
-      .addCase(cartItemAll.rejected, (state) => {
+      .addCase(cartItemAll.rejected, (state, action) => {
         state.loading = false;
-        state.error = "Failed to fetch cartitem";
+        state.error = action.payload || "Failed to fetch cart items.";
       })
 
       .addCase(addToCart.pending, (state) => {

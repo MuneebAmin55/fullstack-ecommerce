@@ -26,7 +26,7 @@ function NavBar() {
   const [search, setSearch] = useState("");
 
   // ✅ NEW: URL params
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -120,7 +120,7 @@ const handleOnClickcat = (category) => {
                     </Nav.Link>
                     <ul className="dropdown-menu">
                       <li>
-                        <LinkContainer to="/UserProfile">
+                        <LinkContainer to="/userprofile">
                           <Nav.Link className="dropdown-item">
                             My Profile
                           </Nav.Link>
@@ -153,7 +153,7 @@ const handleOnClickcat = (category) => {
                     </Nav.Link>
                     <ul className="dropdown-menu">
                       <li>
-                        <LinkContainer to="/SignUp">
+                        <LinkContainer to="/signup">
                           <Nav.Link className="dropdown-item">
                             Signup
                           </Nav.Link>

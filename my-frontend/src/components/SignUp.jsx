@@ -80,11 +80,17 @@ function SignUp() {
         </button>
         
         
-        {error?.username && (
-  <p className="error-message">{error.username}</p>
-)}
+        {error && (
+          <p className="error-message">
+            {typeof error === "string"
+              ? error
+              : error.username
+              ? error.username
+              : error.detail || JSON.stringify(error)}
+          </p>
+        )}
         
-             <p> already have an account  <LinkContainer to="/Login">
+             <p> already have an account  <LinkContainer to="/login">
                   <NavLink className="nav-link active" aria-current="page">
                     login
                   </NavLink>

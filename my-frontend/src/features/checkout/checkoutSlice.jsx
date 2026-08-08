@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
+import { extractApiError } from "../../utils/apiErrorParser";
 
 /* ================= CREATE ADDRESS ================= */
 
@@ -10,7 +11,9 @@ export const createAddress = createAsyncThunk(
       const response = await api.post("address/", addressData);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to create address."
+      );
     }
   }
 );
@@ -24,7 +27,9 @@ export const fetchAddress = createAsyncThunk(
       const response = await api.get("address/");
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to fetch address."
+      );
     }
   }
 );
@@ -38,7 +43,9 @@ export const updateAddress = createAsyncThunk(
       const response = await api.put(`address/${id}/`, data);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to update address."
+      );
     }
   }
 );
@@ -52,7 +59,9 @@ export const deleteAddress = createAsyncThunk(
       await api.delete(`address/${id}/`);
       return id;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(
+        extractApiError(error.response?.data) || "Failed to delete address."
+      );
     }
   }
 );
