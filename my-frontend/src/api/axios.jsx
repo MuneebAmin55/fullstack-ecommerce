@@ -1,10 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
-
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("access");
@@ -18,7 +18,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-
+// Response interceptor
 api.interceptors.response.use(
   (response) => response,
 
@@ -44,7 +44,7 @@ api.interceptors.response.use(
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/auth/jwt/refresh/",
+          `${import.meta.env.VITE_API_URL}auth/jwt/refresh/`,
           {
             refresh: refreshToken,
           }
@@ -62,6 +62,7 @@ api.interceptors.response.use(
         localStorage.removeItem("refresh");
 
         window.location.href = "/login";
+
         return Promise.reject(err);
       }
     }
