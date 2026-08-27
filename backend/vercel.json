@@ -1,23 +1,15 @@
 {
+  "version": 2,
   "builds": [
     {
-      "src": "backend/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "installCommand": "pip install -r requirements.txt",
-        "buildCommand": "python manage.py collectstatic --noinput",
-        "runtime": "python3.12"
-      }
+      "src": "wsgi.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "backend/wsgi.py"
+      "dest": "wsgi.py"
     }
   ]
 }
