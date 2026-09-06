@@ -5,6 +5,7 @@ import { fetchProduct } from "../features/products/productSlice";
 import { Link } from "react-router-dom";
 import Footer from "./Footer";
 import { useSearchParams } from "react-router-dom";
+import { getImageUrl } from "../utils/imageUrl";
 
 function FilterProuct() {
   const dispatch = useDispatch();
@@ -64,7 +65,7 @@ function FilterProuct() {
         {items.map((p) => (
           <div className="product-card" key={p._id}>
             <div className="image-wrapper">
-              {p.image && <img src={p.image} alt={p.productname} />}
+              {p.image && <img src={getImageUrl(p.image)} alt={p.productname} onError={(e) => { e.currentTarget.src = "/placeholder.png"; }} />}
             </div>
             <Link to={`/products/${p._id}`}>{p.productname}</Link>
             <p className="price">${p.price}</p>

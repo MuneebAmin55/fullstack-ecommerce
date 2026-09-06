@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProduct,fetchCatagoryImage } from "../features/products/productSlice";
 import { Link } from "react-router-dom";
 import Footer from "./Footer";
+import { getImageUrl } from "../utils/imageUrl";
 
 
 function Products() {
@@ -37,9 +38,10 @@ if (loading) return <div className="products-container status">Loading...</div>;
         key={c.id}
       >
         <img
-          src={c.categoryimage}
+          src={getImageUrl(c.categoryimage)}
           className="d-block w-100"
           alt="..."
+          onError={(e) => { e.currentTarget.src = "/placeholder.png"; }}
         />
       </div>
     ))}
@@ -70,7 +72,7 @@ if (loading) return <div className="products-container status">Loading...</div>;
         {items.map((p) => (
           <div className="product-card" key={p._id}>
             <div className="image-wrapper">
-              {p.image && <img src={p.image} alt={p.productname} />}
+              {p.image && <img src={getImageUrl(p.image)} alt={p.productname} onError={(e) => { e.currentTarget.src = "/placeholder.png"; }} />}
             </div>
             <Link to={`/products/${p._id}`}>{p.productname}</Link>
             <p className="price">${p.price}</p>

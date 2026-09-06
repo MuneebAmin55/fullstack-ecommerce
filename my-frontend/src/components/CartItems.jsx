@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import Footer from "./Footer";
 import { toast } from "react-toastify";
+import { getImageUrl } from "../utils/imageUrl";
 
 function CartItems() {
   const dispatch = useDispatch();
@@ -192,9 +193,10 @@ function CartItems() {
               />
               <div className="cartitemsdetail">
                 <img
-                  src={c.product?.image || "/placeholder.png"}
+                  src={getImageUrl(c.product?.image)}
                   className="cartitemsimage"
                   alt={c.product?.productname || "Product"}
+                  onError={(e) => { e.currentTarget.src = "/placeholder.png"; }}
                 />
                 <div className="cartname">
                   <h6>{c.product?.productname}</h6>

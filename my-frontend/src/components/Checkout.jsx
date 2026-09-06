@@ -10,6 +10,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import StripePaymentForm from "./StripePaymentForm";
 import api from "../api/axios";
+import { getImageUrl } from "../utils/imageUrl";
 
 const stripePromise = loadStripe(
   import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_51PlaceholderPublishableKeyForTesting"
@@ -118,9 +119,10 @@ function Checkout() {
                 <div className="cartitems">
                   <div className="cartitemsdetail">
                     <img
-                      src={item.image || "/placeholder.png"}
+                      src={getImageUrl(item.image)}
                       className="cartitemsimage"
                       alt={item.productname || "Product"}
+                      onError={(e) => { e.currentTarget.src = "/placeholder.png"; }}
                     />
 
                     <div className="cartname">

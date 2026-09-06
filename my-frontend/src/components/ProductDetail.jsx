@@ -7,6 +7,7 @@ import { fetchProductById } from "../features/products/productSlice";
 import {  addToCart } from "../features/cart/cartSlice";
 import Footer from "./Footer";
 import { toast } from "react-toastify";
+import { getImageUrl } from "../utils/imageUrl";
 function ProductDetail() {
   const { _id } = useParams();
     const navigate = useNavigate();
@@ -89,8 +90,9 @@ const handleOnClick = () => {
         <div className="product-detail-image">
           {singleItem.image && (
             <img
-              src={singleItem.image}
+              src={getImageUrl(singleItem.image)}
               alt={singleItem.productname}
+              onError={(e) => { e.currentTarget.src = "/placeholder.png"; }}
             />
           )}
         </div>
