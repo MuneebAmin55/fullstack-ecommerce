@@ -121,7 +121,7 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 DEFAULT_FRONTEND_ORIGINS = ",".join([
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://fullstack-ecommerce-topaz.vercel.app",
+    "https://fullstack-ecommerce-seven-lovat.vercel.app",
     FRONTEND_URL,
 ])
 
