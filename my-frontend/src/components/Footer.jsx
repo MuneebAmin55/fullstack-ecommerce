@@ -9,7 +9,7 @@ function Footer() {
       <div className="footer-top">
         <div className="footer-section about">
           <div className="footer-logo">
-            <img src="PO-logo.png" alt="Priceoye Logo" />
+            <img src="/PO-logo.png" alt="Priceoye Logo" />
           </div>
           <p>Priceoye helps you compare prices, find the best deals, and shop smarter. Your trusted price comparison platform.</p>
         </div>
@@ -46,15 +46,15 @@ function Footer() {
         <div className="footer-section socials">
           <h4>Get Our App</h4>
           <div className="app-links">
-            <img src="google-playstore.png" alt="Google Play Store" />
+            <img src="/google-playstore.png" alt="Google Play Store" />
           </div>
           <h4>Follow Us</h4>
           <div className="social-icons">
-            <a href="#"><img src="social-youtube.png" alt="YouTube" /></a>
-            <a href="#"><img src="social-fb.png" alt="Facebook" /></a>
-            <a href="#"><img src="social-instagram.png" alt="Instagram" /></a>
-            <a href="#"><img src="tiktok.png" alt="TikTok" /></a>
-            <a href="#"><img src="social-linkedin.png" alt="LinkedIn" /></a>
+            <a href="#"><img src="/social-youtube.png" alt="YouTube" /></a>
+            <a href="#"><img src="/social-fb.png" alt="Facebook" /></a>
+            <a href="#"><img src="/social-instagram.png" alt="Instagram" /></a>
+            <a href="#"><img src="/tiktok.png" alt="TikTok" /></a>
+            <a href="#"><img src="/social-linkedin.png" alt="LinkedIn" /></a>
           </div>
         </div>
       </div>

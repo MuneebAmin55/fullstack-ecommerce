@@ -122,6 +122,7 @@ DEFAULT_FRONTEND_ORIGINS = ",".join([
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://fullstack-ecommerce-seven-lovat.vercel.app",
+    "https://fullstack-ecommerce-9e4piuqrr-muneeb-b631.vercel.app",
     FRONTEND_URL,
 ])
 
@@ -129,6 +130,13 @@ CORS_ALLOWED_ORIGINS = env_list(
     "CORS_ALLOWED_ORIGINS",
     DEFAULT_FRONTEND_ORIGINS,
 )
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.vercel\.app$",
+    r"^https:\/\/.*\.onrender\.com$",
+    r"^http:\/\/localhost:\d+$",
+    r"^http:\/\/127\.0\.0\.1:\d+$",
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -146,12 +154,20 @@ CSRF_TRUSTED_ORIGINS = env_list(
     DEFAULT_FRONTEND_ORIGINS,
 )
 
+for _trusted in [
+    "https://*.vercel.app",
+    "https://*.onrender.com",
+    "https://fullstack-ecommerce-seven-lovat.vercel.app",
+    "https://fullstack-ecommerce-9e4piuqrr-muneeb-b631.vercel.app",
+]:
+    if _trusted not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(_trusted)
+
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read CSRF token
 CSRF_COOKIE_SAMESITE = 'Lax'  # Good for security
-
 
 # --------------------------------------------------
 # Django Templates
