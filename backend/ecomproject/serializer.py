@@ -33,7 +33,7 @@ class ProductsSerializer(serializers.ModelSerializer):
 class CatagoryImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CatagoryImage
-        fields = ['categoryimage']
+        fields = ['id', 'categoryimage']
 
 
 class CartItemsSerializer(serializers.ModelSerializer):
@@ -41,10 +41,22 @@ class CartItemsSerializer(serializers.ModelSerializer):
     product_id = serializers.PrimaryKeyRelatedField(
         queryset=Products.objects.all(), write_only=True, source='product'
     )
+    quantity = serializers.IntegerField(min_value=1, required=False)
 
     class Meta:
         model = CartItems
         fields = ['id', 'product', 'product_id','quantity']
+
+    def validate(self, attrs):
+        product = attrs.get("product") or getattr(self.instance, "product", None)
+        quantity = attrs.get("quantity", getattr(self.instance, "quantity", 1))
+
+        if product and product.stockcount is not None and quantity > product.stockcount:
+            raise serializers.ValidationError({
+                "quantity": "Requested quantity is greater than available stock."
+            })
+
+        return attrs
 
 class UserAddresSeriliazer(serializers.ModelSerializer):
       
@@ -55,10 +67,27 @@ class UserAddresSeriliazer(serializers.ModelSerializer):
 
 class OrderItemsSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(queryset=Products.objects.all())
+    quantity = serializers.IntegerField(min_value=1)
 
     class Meta:
         model = OrderItems
         fields = ["product", "quantity"]
+
+    def validate(self, attrs):
+        product = attrs["product"]
+        quantity = attrs["quantity"]
+
+        if product.price is None:
+            raise serializers.ValidationError({
+                "product": "Product price is not available."
+            })
+
+        if product.stockcount is not None and quantity > product.stockcount:
+            raise serializers.ValidationError({
+                "quantity": f"Only {product.stockcount} items are available for {product.productname}."
+            })
+
+        return attrs
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -68,7 +97,21 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ["id", "address", "status", "total_price", "items","created_at", "order_items"]
-        read_only_fields = ["status", "total_price"]
+        read_only_fields = ["status", "total_price", "created_at"]
+
+    def validate_address(self, address):
+        request = self.context.get("request")
+
+        if request and address and address.user_id != request.user.id:
+            raise serializers.ValidationError("Invalid address.")
+
+        return address
+
+    def validate_items(self, items):
+        if not items:
+            raise serializers.ValidationError("At least one order item is required.")
+
+        return items
 
     def get_order_items(self, obj):
         return [

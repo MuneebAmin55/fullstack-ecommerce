@@ -1,12 +1,14 @@
 # views.py
-from django.contrib.auth.models import User
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from .models import Products,CartItems,Order,OrderItems,UserAddres,CatagoryImage
 from .serializer import ProductsSerializer,UserRegisterSerializer,CartItemsSerializer,OrderSerializer,OrderItemsSerializer,UserAddresSeriliazer,CatagoryImageSerializer,RequestOTPSerializer,ConfirmOTPSerializer
-from rest_framework.permissions import IsAuthenticated, IsAdminUser,IsAuthenticatedOrReadOnly,AllowAny
+from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.contrib.auth.models import User
@@ -34,7 +36,25 @@ from .utils import send_otp
 User = get_user_model()
 
 
+class IsAdminOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+
+        return bool(request.user and request.user.is_staff)
+
+
+def money_to_minor_units(amount):
+    return int(
+        (
+            Decimal(str(amount))
+            * Decimal(str(settings.STRIPE_AMOUNT_MULTIPLIER))
+        ).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
+    )
+
+
 class RequestPasswordResetOTP(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request):
 
@@ -74,6 +94,7 @@ class RequestPasswordResetOTP(APIView):
 
 
 class ConfirmPasswordResetOTP(APIView):
+    permission_classes = [AllowAny]
 
     @transaction.atomic
     def post(self, request):
@@ -148,7 +169,7 @@ class ConfirmPasswordResetOTP(APIView):
             status=status.HTTP_200_OK
         )
 class ProductViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminOrReadOnly]
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
 
@@ -168,7 +189,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class CatagoryImageViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminOrReadOnly]
     queryset = CatagoryImage.objects.all()
     serializer_class = CatagoryImageSerializer
 
@@ -179,17 +200,24 @@ class CartViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return CartItems.objects.filter(user=self.request.user)
 
-    def create(self,request,*args, **kwargs):
-        product_id = ( request.data.get("product_id") )
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        product = serializer.validated_data["product"]
         
         cart_item, created = CartItems.objects.get_or_create(
             user=request.user,
-            product_id=product_id
+            product=product
         )       
         if created:
-          cart_item.quantity = 1
+            cart_item.quantity = 1
         else:
-         cart_item.quantity += 1
+            if product.stockcount is not None and cart_item.quantity >= product.stockcount:
+                return Response(
+                    {"quantity": "Requested quantity is greater than available stock."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            cart_item.quantity += 1
 
         cart_item.save()
        
@@ -219,26 +247,37 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 import stripe
-from django.conf import settings
 
-stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', 'sk_test_51PlaceholderSecretKeyForTesting')
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 class CreateStripePaymentIntentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        if not settings.STRIPE_SECRET_KEY:
+            return Response(
+                {'error': 'Stripe is not configured.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
         try:
             amount = request.data.get('amount')
             order_id = request.data.get('order_id')
 
-            if not amount or float(amount) <= 0:
+            if order_id:
+                order = Order.objects.get(id=order_id, user=request.user)
+                amount = order.total_price
+
+            amount = Decimal(str(amount))
+
+            if amount <= 0:
                 return Response({'error': 'A valid amount is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-            amount_in_cents = int(float(amount) * 100)
+            amount_in_minor_units = money_to_minor_units(amount)
 
             intent = stripe.PaymentIntent.create(
-                amount=amount_in_cents,
-                currency='usd',
+                amount=amount_in_minor_units,
+                currency=settings.STRIPE_CURRENCY,
                 metadata={
                     'user_id': request.user.id,
                     'order_id': order_id or ''
@@ -250,6 +289,10 @@ class CreateStripePaymentIntentView(APIView):
                 'paymentIntentId': intent.id
             }, status=status.HTTP_200_OK)
 
+        except (InvalidOperation, TypeError):
+            return Response({'error': 'A valid amount is required'}, status=status.HTTP_400_BAD_REQUEST)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -258,12 +301,34 @@ class ConfirmStripePaymentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        if not settings.STRIPE_SECRET_KEY:
+            return Response(
+                {'error': 'Stripe is not configured.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
         order_id = request.data.get('order_id')
         payment_intent_id = request.data.get('payment_intent_id')
 
         try:
+            if not payment_intent_id:
+                return Response({'error': 'Payment intent is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+
+            if payment_intent.status != 'succeeded':
+                return Response({'error': 'Payment has not succeeded'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if str(payment_intent.metadata.get('user_id', '')) != str(request.user.id):
+                return Response({'error': 'Payment does not belong to this user'}, status=status.HTTP_403_FORBIDDEN)
+
             if order_id:
                 order = Order.objects.get(id=order_id, user=request.user)
+                expected_amount = money_to_minor_units(order.total_price)
+
+                if payment_intent.amount != expected_amount or payment_intent.currency != settings.STRIPE_CURRENCY:
+                    return Response({'error': 'Payment amount does not match the order total'}, status=status.HTTP_400_BAD_REQUEST)
+
                 order.status = Order.STATUS_PAID
                 order.save()
                 return Response({'message': 'Payment confirmed and order updated to paid.', 'status': order.status}, status=status.HTTP_200_OK)
@@ -271,4 +336,4 @@ class ConfirmStripePaymentView(APIView):
         except Order.DoesNotExist:
             return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

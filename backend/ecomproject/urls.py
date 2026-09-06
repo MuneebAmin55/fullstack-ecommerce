@@ -1,6 +1,5 @@
-from django.urls import path, include, re_path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from django.views.generic import TemplateView
 
 from .views import (
     ProductViewSet,
@@ -43,6 +42,4 @@ urlpatterns = [
         ConfirmPasswordResetOTP.as_view(),
         name="confirm-reset-otp",
     ),
-    # FRONTEND (KEEP LAST)
-    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
 ]

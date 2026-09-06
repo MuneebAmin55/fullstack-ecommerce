@@ -1,7 +1,14 @@
 import axios from "axios";
 
+const normalizeApiBaseUrl = (url) => {
+  const baseUrl = url || "/api/";
+  return baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+};
+
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: API_BASE_URL,
 });
 
 // Request interceptor
@@ -26,6 +33,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (
+      originalRequest &&
       error.response &&
       error.response.status === 401 &&
       !originalRequest._retry &&
@@ -44,7 +52,7 @@ api.interceptors.response.use(
         }
 
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}auth/jwt/refresh/`,
+          `${API_BASE_URL}auth/jwt/refresh/`,
           {
             refresh: refreshToken,
           }

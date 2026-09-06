@@ -8,6 +8,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
+from django.conf import settings
+from decimal import Decimal
 
 User = get_user_model()
 
@@ -113,7 +115,7 @@ class Order(models.Model):
 
     def calculate_total(self):
         total = sum(item.price_at_time * item.quantity for item in self.items.all())
-        self.total_price = total
+        self.total_price = total + Decimal(str(settings.SHIPPING_PRICE))
         self.save()
 
     def __str__(self):

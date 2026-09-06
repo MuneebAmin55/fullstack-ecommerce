@@ -81,7 +81,7 @@ function Checkout() {
       };
 
       await dispatch(addToOrder(orderData)).unwrap();
-      navigate("/Myorders");
+      navigate("/my-orders");
     } catch (err) {
       console.error("COD order failed:", err);
       alert("Failed to place order. Please try again.");
@@ -176,7 +176,7 @@ function Checkout() {
                   onChange={() => setPaymentMethod("cod")}
                 />
                 <label className="form-check-label ms-2 fw-semibold" htmlFor="cod" style={{ cursor: "pointer" }}>
-                  💵 Cash on Delivery (COD)
+                  Cash on Delivery (COD)
                 </label>
               </div>
 
@@ -191,7 +191,7 @@ function Checkout() {
                   onChange={() => setPaymentMethod("card")}
                 />
                 <label className="form-check-label ms-2 fw-semibold" htmlFor="card" style={{ cursor: "pointer" }}>
-                  💳 Pay Online with Card (Stripe)
+                  Pay Online with Card (Stripe)
                 </label>
               </div>
             </div>

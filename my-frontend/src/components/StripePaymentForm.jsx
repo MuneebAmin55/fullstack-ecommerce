@@ -21,7 +21,7 @@ const cardElementOptions = {
   },
 };
 
-function StripePaymentForm({ totalAmount, onPaymentSuccess, orderData }) {
+function StripePaymentForm({ totalAmount, onPaymentSuccess }) {
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
