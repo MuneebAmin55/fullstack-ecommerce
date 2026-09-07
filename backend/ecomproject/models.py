@@ -1,21 +1,18 @@
-from django.db import models
-from django.contrib.auth.models import User
-# Create your models here.
 import secrets
 from datetime import timedelta
+from decimal import Decimal
 
-from django.db import models
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password, check_password
+from django.db import models
 from django.utils import timezone
-from django.conf import settings
-from decimal import Decimal
 
 User = get_user_model()
 
 
 class PasswordResetOTP(models.Model):
-    user = models.ForeignKey( User,  on_delete=models.CASCADE,related_name="password_otps")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="password_otps")
 
     otp = models.CharField(max_length=255)
     attempts = models.PositiveIntegerField(default=0)
@@ -47,32 +44,31 @@ class PasswordResetOTP(models.Model):
 
     def expired(self):
         return timezone.now() > self.created_at + timedelta(minutes=10)
+
+
 class Products(models.Model):
-    user= models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
-    productname=models.CharField(max_length=150)
-    
-    image=models.ImageField(null=True,blank=True)
-    productbrand=models.CharField(max_length=100,null=True,blank=True)
-    productcategory=models.CharField(max_length=100,null=True,blank=True)
-    productinfo=models.TextField(null=True,blank=True)
-    rating=models.DecimalField(max_digits=8,decimal_places=2,null=True,blank=True)
-    price=models.DecimalField(max_digits=7,decimal_places=2,null=True,blank=True)
-    stockcount=models.IntegerField(null=True,blank=True,default=0)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    productname = models.CharField(max_length=150)
+    image = models.ImageField(null=True, blank=True)
+    productbrand = models.CharField(max_length=100, null=True, blank=True)
+    productcategory = models.CharField(max_length=100, null=True, blank=True)
+    productinfo = models.TextField(null=True, blank=True)
+    rating = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    stockcount = models.IntegerField(null=True, blank=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    _id=models.AutoField(primary_key=True,editable=False)
+    _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
         return self.productname
-    
+
+
 class CatagoryImage(models.Model):
-    categoryimage=models.ImageField(null=True,blank=True)
+    categoryimage = models.ImageField(null=True, blank=True)
 
 
-  
-    
 class CartItems(models.Model):
-    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=0)
@@ -81,16 +77,16 @@ class CartItems(models.Model):
         return f"{self.user} - {self.product}"
 
     class Meta:
-      unique_together = ('user', 'product')
+        unique_together = ('user', 'product')
+
 
 class UserAddres(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15)
     province = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     address_line = models.TextField()
-  
 
     def __str__(self):
         return f"{self.full_name} - {self.city}"

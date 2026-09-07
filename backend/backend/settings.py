@@ -52,7 +52,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "cloudinary_storage",
     "django.contrib.staticfiles",
+    "cloudinary",
 
     "djoser",
     "rest_framework",
@@ -191,7 +193,7 @@ TEMPLATES = [
 
 
 # --------------------------------------------------
-# Static / Media
+# Static / Media (Cloudinary)
 # --------------------------------------------------
 
 STATIC_URL = "/static/"
@@ -200,17 +202,23 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+# Media URL is retained as prefix for django-cloudinary-storage
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+
+CLOUDINARY_STORAGE = {
+    "CLOUDINARY_URL": os.getenv("CLOUDINARY_URL"),
+}
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = not DEBUG
